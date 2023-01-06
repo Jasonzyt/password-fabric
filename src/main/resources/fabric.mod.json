@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "password",
+  "version": "${version}",
+
+  "name": "Password",
+  "description": "A password mod for fabric servers",
+  "authors": [
+    "Jasonzyt"
+  ],
+  "contact": {
+    "homepage": "https://github.com/Jasonzyt/password-fabric",
+    "sources": "https://github.com/Jasonzyt/password-fabric"
+  },
+
+  "license": "GPL-3.0",
+  "icon": "assets/password.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.jasonzyt.passwordfabric.PasswordMod"
+    ]
+  },
+  "mixins": [
+    "modid.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.14.11",
+    "fabric-api": "*",
+    "minecraft": "~1.19.3",
+    "java": ">=17"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}
