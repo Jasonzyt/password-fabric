@@ -19,11 +19,11 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.jasonzyt.passwordfabric.PasswordMod"
+      "com.jasonzyt.passwordfabric.ModMain"
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "password.mixins.json"
   ],
 
   "depends": {
