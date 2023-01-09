@@ -97,7 +97,8 @@ public class ModMain implements ModInitializer {
     public static void tick() {
         for (ServerPlayer player : unauthedPlayers) {
             player.teleportTo(0, 1024, 0);
-            if (LocalDateTime.now().isAfter(playerLoginTime.get(player).plusSeconds(60))) {
+            LocalDateTime loginTime = playerLoginTime.get(player);
+            if (loginTime != null && LocalDateTime.now().isAfter(loginTime.plusSeconds(60))) {
                 player.connection.disconnect(Component.literal("You did not enter your password within 60 seconds!"));
             }
         }
