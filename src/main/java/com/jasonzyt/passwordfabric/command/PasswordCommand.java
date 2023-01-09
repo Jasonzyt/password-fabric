@@ -2,6 +2,7 @@ package com.jasonzyt.passwordfabric.command;
 
 
 import com.jasonzyt.passwordfabric.ModMain;
+import com.jasonzyt.passwordfabric.data.Data;
 import com.jasonzyt.passwordfabric.data.Utils;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -88,8 +89,7 @@ public class PasswordCommand {
         pass = Utils.doSha256(pass);
         if (!ModMain.data.hasPassword(player.getStringUUID())) {
             ModMain.data.addPassword(player.getStringUUID(), pass);
-            ModMain.data.removePlayerAllTrustIPs(player.getStringUUID());
-            src.sendSuccess(Component.literal("密码设置成功! 并清除了所有信任IP").withStyle(ChatFormatting.GREEN), false);
+            src.sendSuccess(Component.literal("密码设置成功!").withStyle(ChatFormatting.GREEN), false);
             ModMain.onPlayerAuthed(player);
             return Command.SINGLE_SUCCESS;
         }
@@ -98,7 +98,13 @@ public class PasswordCommand {
             return Command.SINGLE_SUCCESS;
         }
         ModMain.data.addPassword(player.getStringUUID(), pass);
-        src.sendSuccess(Component.literal("密码修改成功!").withStyle(ChatFormatting.GREEN), false);
+        ModMain.data.removePlayerAllTrustIPs(player.getStringUUID());
+        src.sendSuccess(Component.literal("密码修改成功! 并清除了所有信任IP").withStyle(ChatFormatting.GREEN), false);
+        return Command.SINGLE_SUCCESS;
+    }
+
+    public int executeReloadCommand(CommandContext<CommandSourceStack> context) {
+        ModMain.data = Data.read();
         return Command.SINGLE_SUCCESS;
     }
 
@@ -112,23 +118,36 @@ public class PasswordCommand {
                 literal("pwd")
                         // pwd a <password>
                         .then(literal("a")
-                                .then(argument("password", greedyString())).executes(this::executeAuthCommand))
+                                .requires(CommandSourceStack::isPlayer)
+                                .then(argument("password", greedyString())
+                                        .executes(this::executeAuthCommand)))
                         .then(literal("s")
+                                .requires(CommandSourceStack::isPlayer)
                                 .then(argument("password", greedyString())
                                         .executes(this::executeSetCommand)))
                         .then(literal("i")
+                                .requires(CommandSourceStack::isPlayer)
                                 .executes(this::executeInfoCommand))
                         .then(literal("t")
+                                .requires(CommandSourceStack::isPlayer)
                                 .executes(this::executeTrustCommand))
                         .then(literal("auth")
-                                .then(argument("password", greedyString())).executes(this::executeAuthCommand))
+                                .requires(CommandSourceStack::isPlayer)
+                                .then(argument("password", greedyString())
+                                        .executes(this::executeAuthCommand)))
                         .then(literal("set")
+                                .requires(CommandSourceStack::isPlayer)
                                 .then(argument("password", greedyString())
                                         .executes(this::executeSetCommand)))
                         .then(literal("info")
+                                .requires(CommandSourceStack::isPlayer)
                                 .executes(this::executeInfoCommand))
                         .then(literal("trust")
+                                .requires(CommandSourceStack::isPlayer)
                                 .executes(this::executeTrustCommand))
+                        .then(literal("reload")
+                                .requires(src -> src.hasPermission(4))
+                                .executes(this::executeReloadCommand))
         );
 
     }
