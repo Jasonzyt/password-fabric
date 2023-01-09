@@ -1,9 +1,9 @@
 package com.jasonzyt.passwordfabric.data;
 
 import com.google.gson.Gson;
+import net.minecraft.world.phys.Vec3;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.HashMap;
@@ -16,32 +16,18 @@ public class Data {
     private final Map<String, String> passwords = new HashMap<>();
     private final Map<String, List<TrustIPInfo>> trustIPs = new HashMap<>();
     private final Map<String, Map<String, Long>> ipLoginTime = new HashMap<>();
+    private final Map<String, Vec3> playerNotAuthedPositions = new HashMap<>();
 
     private static final String FILE_NAME = "./config/password/passwords.json";
-
-    public static String doSha256(String str) {
-        try {
-            java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-256");
-            byte[] array = md.digest(str.getBytes());
-            StringBuilder sb = new StringBuilder();
-            for (byte item : array) {
-                sb.append(Integer.toHexString((item & 0xFF) | 0x100), 1, 3);
-            }
-            return sb.toString();
-        } catch (java.security.NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     public static Data read() {
         Gson gson = new Gson();
         File file = new File(FILE_NAME);
         try {
             if (!file.exists()) {
-                if (!file.createNewFile()) {
-                    return new Data();
-                }
+                Data res = new Data();
+                res.save();
+                return res;
             }
             return gson.fromJson(new FileReader(FILE_NAME), Data.class);
         } catch (Exception e) {
@@ -54,6 +40,9 @@ public class Data {
         Gson gson = new Gson();
         String json = gson.toJson(this, Data.class);
         FileWriter writer;
+        if (!new File(FILE_NAME).getParentFile().exists()) {
+            new File(FILE_NAME).getParentFile().mkdirs();
+        }
         try {
             writer = new FileWriter(FILE_NAME);
             writer.write(json);
@@ -131,6 +120,28 @@ public class Data {
 
     public Map<String, Long> getPlayerIPLoginTimes(String uuid) {
         return ipLoginTime.computeIfAbsent(uuid, k -> new HashMap<>());
+    }
+
+    public Map<String, Vec3> getPlayerNotAuthedPositions() {
+        return playerNotAuthedPositions;
+    }
+
+    public void addPlayerNotAuthedPosition(String uuid, Vec3 pos) {
+        playerNotAuthedPositions.put(uuid, pos);
+        save();
+    }
+
+    public void removePlayerNotAuthedPosition(String uuid) {
+        playerNotAuthedPositions.remove(uuid);
+        save();
+    }
+
+    public Vec3 getPlayerNotAuthedPosition(String uuid) {
+        return playerNotAuthedPositions.get(uuid);
+    }
+
+    public boolean hasPlayerNotAuthedPosition(String uuid) {
+        return playerNotAuthedPositions.containsKey(uuid);
     }
 
 }
