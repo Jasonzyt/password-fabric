@@ -104,6 +104,11 @@ public class Data {
         return trustIPs.computeIfAbsent(uuid, k -> new LinkedList<>()).stream().anyMatch(info -> info.getAddress().equals(ip));
     }
 
+    public void removePlayerAllTrustIPs(String uuid) {
+        trustIPs.remove(uuid);
+        save();
+    }
+
     public Map<String, Map<String, Long>> getIPLoginTime() {
         return ipLoginTime;
     }

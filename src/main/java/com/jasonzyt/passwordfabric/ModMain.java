@@ -7,7 +7,11 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +28,12 @@ public class ModMain implements ModInitializer {
     public static final List<ServerPlayer> unauthedPlayers = new LinkedList<>();
     public static final Map<ServerPlayer, Vec3> playerNotAuthedPositions = new HashMap<>();
     public static final Map<ServerPlayer, LocalDateTime> playerLoginTime = new HashMap<>();
-    public static Data data = null;
+    public static MinecraftServer server;
+    public static Data data;
+
+    private String getServerLevelName(ServerLevel level) {
+        return level.dimension().location().toString();
+    }
 
     @Override
     public void onInitialize() {
@@ -37,7 +46,11 @@ public class ModMain implements ModInitializer {
     }
 
     public static void onPlayerLogIn(ServerPlayer player) {
+        for (ResourceKey<Level> key : server.levelKeys()) {
+            logger.info("Level: " + key.location().toString());
+        }
         players.add(player);
+        player.getLevel();
         if (data.hasPlayerNotAuthedPosition(player.getStringUUID())) {
             playerNotAuthedPositions.put(player, data.getPlayerNotAuthedPosition(player.getStringUUID()));
             data.removePlayerNotAuthedPosition(player.getStringUUID());
@@ -64,15 +77,14 @@ public class ModMain implements ModInitializer {
         } else {
             unauthedPlayers.add(player);
             if (!data.hasPassword(player.getStringUUID())) {
-                player.sendSystemMessage(Component.literal("您还未设置密码, 请发送命令 /pwd s <密码> 来设置密码, 否则无法进入服务器").withStyle(ChatFormatting.BLUE));
+                player.sendSystemMessage(Component.literal("您还未设置密码, 请发送命令 \"/pwd s <密码>\" 来设置密码, 否则无法进入服务器").withStyle(ChatFormatting.BLUE));
             } else {
-                player.sendSystemMessage(Component.literal("你还未通过验证! 请发送命令 /pwd a <密码> 来验证, 否则无法进入服务器").withStyle(ChatFormatting.RED));
+                player.sendSystemMessage(Component.literal("你还未通过验证! 请发送命令 \"/pwd a <密码>\" 来验证, 否则无法进入服务器").withStyle(ChatFormatting.RED));
             }
         }
     }
 
     public static void onPlayerLogOut(ServerPlayer player) {
-        logger.info("onPlayerLogOut");
         if (unauthedPlayers.contains(player)) {
             Vec3 pos = playerNotAuthedPositions.get(player);
             player.teleportTo(pos.x, pos.y, pos.z);
@@ -100,5 +112,12 @@ public class ModMain implements ModInitializer {
         }
         data.removePlayerNotAuthedPosition(player.getStringUUID());
         player.sendSystemMessage(Component.literal("验证成功!").withStyle(ChatFormatting.GREEN));
+        if (!data.hasTrustIP(player.getStringUUID(), player.getIpAddress())) {
+            player.sendSystemMessage(Component.literal("Tips: 如果不想每次进入都输入密码, 可以发送命令 \"/pwd trust\" 信任此IP 30天").withStyle(ChatFormatting.YELLOW));
+        }
+    }
+
+    public static void onServerLoaded(MinecraftServer server) {
+        ModMain.server = server;
     }
 }

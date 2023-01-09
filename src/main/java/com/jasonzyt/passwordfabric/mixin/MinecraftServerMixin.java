@@ -23,4 +23,9 @@ public abstract class MinecraftServerMixin {
     private void onTick(BooleanSupplier booleanSupplier_1, CallbackInfo ci) {
         ModMain.tick();
     }
+
+    @Inject(method = "loadLevel", at = @At("HEAD"))
+    private void serverLoaded(CallbackInfo ci) {
+        ModMain.onServerLoaded((MinecraftServer) (Object) this);
+    }
 }
