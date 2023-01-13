@@ -17,6 +17,7 @@ public class Data {
     private final Map<String, List<TrustIPInfo>> trustIPs = new HashMap<>();
     private final Map<String, Map<String, Long>> ipLoginTime = new HashMap<>();
     private final Map<String, Vec3> playerNotAuthedPositions = new HashMap<>();
+    private final List<String> whitelist = new LinkedList<>();
 
     private static final String FILE_NAME = "./config/password/passwords.json";
 
@@ -147,6 +148,24 @@ public class Data {
 
     public boolean hasPlayerNotAuthedPosition(String uuid) {
         return playerNotAuthedPositions.containsKey(uuid);
+    }
+
+    public List<String> getWhitelist() {
+        return whitelist;
+    }
+
+    public void addWhitelist(String name) {
+        whitelist.add(name);
+        save();
+    }
+
+    public void removeWhitelist(String name) {
+        whitelist.remove(name);
+        save();
+    }
+
+    public boolean hasWhitelist(String name) {
+        return whitelist.contains(name);
     }
 
 }

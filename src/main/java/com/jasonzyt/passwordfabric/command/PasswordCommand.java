@@ -15,12 +15,21 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 
+import java.util.List;
+
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
+import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
 public class PasswordCommand {
     public static final PasswordCommand INSTANCE = new PasswordCommand();
+
+    public enum WhitelistAction {
+        ADD,
+        REMOVE,
+        LIST
+    }
 
     public int executeAuthCommand(CommandContext<CommandSourceStack> context) {
         String pass = context.getArgument("password", String.class);
@@ -117,6 +126,38 @@ public class PasswordCommand {
         return Command.SINGLE_SUCCESS;
     }
 
+    public int executeWhitelistCommand(CommandContext<CommandSourceStack> context, WhitelistAction action) {
+        CommandSourceStack src = context.getSource();
+        switch (action) {
+            case ADD -> {
+                String player = context.getArgument("playerName", String.class);
+                ModMain.data.addWhitelist(player);
+                src.sendSuccess(Component.literal("已将玩家 " + player + " 添加到白名单").withStyle(ChatFormatting.GREEN), false);
+            }
+            case REMOVE -> {
+                String player = context.getArgument("playerName", String.class);
+                ModMain.data.removeWhitelist(player);
+                src.sendSuccess(Component.literal("已将玩家 " + player + " 从白名单移除").withStyle(ChatFormatting.GREEN), false);
+            }
+            case LIST -> {
+                List<String> whitelist = ModMain.data.getWhitelist();
+                if (whitelist.isEmpty()) {
+                    src.sendSuccess(Component.literal("白名单为空").withStyle(ChatFormatting.GREEN), false);
+                } else {
+                    src.sendSuccess(Component.literal("白名单:").withStyle(ChatFormatting.GREEN), false);
+                    for (String player : whitelist) {
+                        src.sendSuccess(Component.literal(player).withStyle(ChatFormatting.GREEN), false);
+                    }
+                }
+            }
+            default -> {
+                src.sendFailure(Component.literal("WTF").withStyle(ChatFormatting.RED));
+                return Command.SINGLE_SUCCESS;
+            }
+        }
+        return Command.SINGLE_SUCCESS;
+    }
+
     public void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext commandBuildContext, Commands.CommandSelection commandSelection) {
         dispatcher.register(
                 literal("pwd")
@@ -152,6 +193,26 @@ public class PasswordCommand {
                         .then(literal("reload")
                                 .requires(src -> src.hasPermission(4))
                                 .executes(this::executeReloadCommand))
+                        .then(literal("wl")
+                                .requires(src -> src.hasPermission(4))
+                                .then(literal("add")
+                                        .then(argument("playerName", word())
+                                                .executes(ctx -> executeWhitelistCommand(ctx, WhitelistAction.ADD))))
+                                .then(literal("remove")
+                                        .then(argument("playerName", word())
+                                                .executes(ctx -> executeWhitelistCommand(ctx, WhitelistAction.REMOVE))))
+                                .then(literal("list")
+                                        .executes(ctx -> executeWhitelistCommand(ctx, WhitelistAction.LIST))))
+                        .then(literal("whitelist")
+                                .requires(src -> src.hasPermission(4))
+                                .then(literal("add")
+                                        .then(argument("playerName", word())
+                                                .executes(ctx -> executeWhitelistCommand(ctx, WhitelistAction.ADD))))
+                                .then(literal("remove")
+                                        .then(argument("playerName", word())
+                                                .executes(ctx -> executeWhitelistCommand(ctx, WhitelistAction.REMOVE))))
+                                .then(literal("list")
+                                        .executes(ctx -> executeWhitelistCommand(ctx, WhitelistAction.LIST))))
         );
 
     }

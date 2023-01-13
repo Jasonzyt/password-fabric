@@ -51,6 +51,10 @@ public class ModMain implements ModInitializer {
         } else {
             playerNotAuthedPositions.put(player, player.position());
         }
+        if (!data.hasWhitelist(player.getName().getString())) {
+            player.connection.disconnect(Component.literal("You are not in the whitelist! Please contact server admin."));
+            return;
+        }
         data.addPlayerNotAuthedPosition(player.getStringUUID(), player.position()); // Backup position to data file
         playerLoginTime.put(player, LocalDateTime.now());
         data.addIPLoginTime(player.getStringUUID(), player.getIpAddress(), System.currentTimeMillis());
