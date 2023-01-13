@@ -34,7 +34,7 @@ public class PasswordCommand {
             src.sendFailure(Component.literal("内部错误").withStyle(ChatFormatting.RED));
             return Command.SINGLE_SUCCESS;
         }
-        if (!ModMain.playersEnteredPassword.contains(player)) {
+        if (ModMain.playersEnteredPassword.contains(player)) {
             src.sendFailure(Component.literal("你已经通过验证了, 请勿重复验证").withStyle(ChatFormatting.RED));
             return Command.SINGLE_SUCCESS;
         }
