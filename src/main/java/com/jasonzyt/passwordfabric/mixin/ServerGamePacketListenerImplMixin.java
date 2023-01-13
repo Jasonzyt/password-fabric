@@ -59,27 +59,27 @@ public class ServerGamePacketListenerImplMixin {
         ModMain.onPlayerChat(player, ci);
     }
 
-    @Inject(method = "handleSetCarriedItem", at = @At("HEAD"))
+    @Inject(method = "handleSetCarriedItem", at = @At("HEAD"), cancellable = true)
     private void onSelectSlot(ServerboundSetCarriedItemPacket packet, CallbackInfo ci) {
         ModMain.onPlayerSelectSlot(player, ci);
     }
 
-    @Inject(method = "handleUseItem", at = @At("HEAD"))
+    @Inject(method = "handleUseItem", at = @At("HEAD"), cancellable = true)
     private void onUseItem(ServerboundUseItemPacket packet, CallbackInfo ci) {
         ModMain.onPlayerUseItem(player, ci);
     }
 
-    @Inject(method = "handleUseItemOn", at = @At("HEAD"))
+    @Inject(method = "handleUseItemOn", at = @At("HEAD"), cancellable = true)
     private void onUseItemOn(ServerboundUseItemOnPacket packet, CallbackInfo ci) {
         ModMain.onPlayerUseItem(player, ci);
     }
 
-    @Inject(method = "handleInteract", at = @At("HEAD"))
+    @Inject(method = "handleInteract", at = @At("HEAD"), cancellable = true)
     private void onInteract(ServerboundInteractPacket packet, CallbackInfo ci) {
         ModMain.onPlayerInteract(player, ci);
     }
 
-    @Inject(method = "handleMovePlayer", at = @At("HEAD"))
+    @Inject(method = "handleMovePlayer", at = @At("HEAD"), cancellable = true)
     private void onMovePlayer(ServerboundMovePlayerPacket packet, CallbackInfo ci) {
         ModMain.onPlayerMove(player, ci);
     }
