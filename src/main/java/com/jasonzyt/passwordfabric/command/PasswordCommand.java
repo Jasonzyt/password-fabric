@@ -43,7 +43,7 @@ public class PasswordCommand {
             src.sendFailure(Component.literal("内部错误").withStyle(ChatFormatting.RED));
             return Command.SINGLE_SUCCESS;
         }
-        if (ModMain.playersEnteredPassword.contains(player)) {
+        if (ModMain.PLAYERS_ENTERED_PASSWORD.contains(player)) {
             src.sendFailure(Component.literal("你已经通过验证了, 请勿重复验证").withStyle(ChatFormatting.RED));
             return Command.SINGLE_SUCCESS;
         }
@@ -73,7 +73,7 @@ public class PasswordCommand {
             src.sendFailure(Component.literal("内部错误").withStyle(ChatFormatting.RED));
             return Command.SINGLE_SUCCESS;
         }
-        if (ModMain.unAuthedPlayers.contains(player)) {
+        if (ModMain.UNAUTHED_PLAYERS.contains(player)) {
             src.sendFailure(Component.literal("你还没有通过验证, 请先通过验证! 发送命令 \"/pwd a <密码>\" 验证").withStyle(ChatFormatting.RED));
             return Command.SINGLE_SUCCESS;
         }
@@ -102,11 +102,11 @@ public class PasswordCommand {
             ModMain.onPlayerAuthed(player);
             return Command.SINGLE_SUCCESS;
         }
-        if (!ModMain.playersEnteredPassword.contains(player)) {
+        if (!ModMain.PLAYERS_ENTERED_PASSWORD.contains(player)) {
             src.sendFailure(Component.literal("高危操作, 请先输入密码! 发送命令 \"/pwd a <密码>\" 验证").withStyle(ChatFormatting.RED));
             return Command.SINGLE_SUCCESS;
         }
-        if (ModMain.unAuthedPlayers.contains(player)) {
+        if (ModMain.UNAUTHED_PLAYERS.contains(player)) {
             src.sendFailure(Component.literal("你还没有通过验证, 请先通过验证! 发送命令 \"/pwd a <密码>\" 验证").withStyle(ChatFormatting.RED));
             return Command.SINGLE_SUCCESS;
         }

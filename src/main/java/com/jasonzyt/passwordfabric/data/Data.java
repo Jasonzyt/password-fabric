@@ -16,7 +16,7 @@ public class Data {
     private final Map<String, String> passwords = new HashMap<>();
     private final Map<String, List<TrustIPInfo>> trustIPs = new HashMap<>();
     private final Map<String, Map<String, Long>> ipLoginTime = new HashMap<>();
-    private final Map<String, Vec3> playerNotAuthedPositions = new HashMap<>();
+    private final Map<String, Position> unAuthedPlayerPositions = new HashMap<>();
     private final List<String> whitelist = new LinkedList<>();
 
     private static final String FILE_NAME = "./config/password/passwords.json";
@@ -128,26 +128,26 @@ public class Data {
         return ipLoginTime.computeIfAbsent(uuid, k -> new HashMap<>());
     }
 
-    public Map<String, Vec3> getPlayerNotAuthedPositions() {
-        return playerNotAuthedPositions;
+    public Map<String, Position> getUnAuthedPlayerPositions() {
+        return unAuthedPlayerPositions;
     }
 
-    public void addPlayerNotAuthedPosition(String uuid, Vec3 pos) {
-        playerNotAuthedPositions.put(uuid, pos);
+    public void addPlayerNotAuthedPosition(String uuid, Position pos) {
+        unAuthedPlayerPositions.put(uuid, pos);
         save();
     }
 
     public void removePlayerNotAuthedPosition(String uuid) {
-        playerNotAuthedPositions.remove(uuid);
+        unAuthedPlayerPositions.remove(uuid);
         save();
     }
 
-    public Vec3 getPlayerNotAuthedPosition(String uuid) {
-        return playerNotAuthedPositions.get(uuid);
+    public Position getPlayerNotAuthedPosition(String uuid) {
+        return unAuthedPlayerPositions.get(uuid);
     }
 
     public boolean hasPlayerNotAuthedPosition(String uuid) {
-        return playerNotAuthedPositions.containsKey(uuid);
+        return unAuthedPlayerPositions.containsKey(uuid);
     }
 
     public List<String> getWhitelist() {
