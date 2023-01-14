@@ -21,36 +21,6 @@ public class ServerGamePacketListenerImplMixin {
         ModMain.onPlayerLogOut(player);
     }
 
-    @Inject(method = "handlePlayerAction", cancellable = true, at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/server/level/ServerPlayer;drop(Z)Z",
-            ordinal = 0,
-            shift = At.Shift.BEFORE
-    ))
-    private void onDropItem(ServerboundPlayerActionPacket serverboundPlayerActionPacket, CallbackInfo ci) {
-        ModMain.onPlayerDropItem(player, ci);
-    }
-
-    @Inject(method = "handlePlayerAction", cancellable = true, at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/server/level/ServerPlayer;drop(Z)Z",
-            ordinal = 1,
-            shift = At.Shift.BEFORE
-    ))
-    private void onDropAllItems(ServerboundPlayerActionPacket serverboundPlayerActionPacket, CallbackInfo ci) {
-        ModMain.onPlayerDropItem(player, ci);
-    }
-
-    @Inject(method = "handlePlayerAction", cancellable = true, at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/server/level/ServerPlayer;getItemInHand(Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/item/ItemStack;",
-            ordinal = 0,
-            shift = At.Shift.BEFORE
-    ))
-    private void onSwapHand(ServerboundPlayerActionPacket serverboundPlayerActionPacket, CallbackInfo ci) {
-        ModMain.onPlayerSwapHand(player, ci);
-    }
-
     @Inject(method = "handleChat(Lnet/minecraft/network/protocol/game/ServerboundChatPacket;)V",
             at = @At(value = "HEAD"),
             cancellable = true

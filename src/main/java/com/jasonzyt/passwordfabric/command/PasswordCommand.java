@@ -17,6 +17,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.util.List;
 
+import static com.mojang.brigadier.arguments.BoolArgumentType.bool;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static net.minecraft.commands.Commands.argument;
@@ -213,6 +214,19 @@ public class PasswordCommand {
                                                 .executes(ctx -> executeWhitelistCommand(ctx, WhitelistAction.REMOVE))))
                                 .then(literal("list")
                                         .executes(ctx -> executeWhitelistCommand(ctx, WhitelistAction.LIST))))
+                        .then(literal("debug")
+                                .requires(src -> src.hasPermission(4))
+                                .then(argument("on", bool())
+                                        .executes(ctx -> {
+                                            ModMain.data.setDebugMode(ctx.getArgument("on", Boolean.class));
+                                            return Command.SINGLE_SUCCESS;
+                                        })
+                                )
+                                .executes(ctx -> {
+                                    ctx.getSource().sendSuccess(Component.literal("Debug mode: " + ModMain.data.isDebugMode()).withStyle(ChatFormatting.GREEN), false);
+                                    return Command.SINGLE_SUCCESS;
+                                })
+                        )
         );
 
     }

@@ -1,7 +1,6 @@
 package com.jasonzyt.passwordfabric.data;
 
 import com.google.gson.Gson;
-import net.minecraft.world.phys.Vec3;
 
 import java.io.File;
 import java.io.FileReader;
@@ -16,10 +15,12 @@ public class Data {
     private final Map<String, String> passwords = new HashMap<>();
     private final Map<String, List<TrustIPInfo>> trustIPs = new HashMap<>();
     private final Map<String, Map<String, Long>> ipLoginTime = new HashMap<>();
-    private final Map<String, Position> unAuthedPlayerPositions = new HashMap<>();
+    private final Map<String, PlayerInfo> unAuthedPlayerInfo = new HashMap<>();
     private final List<String> whitelist = new LinkedList<>();
+    private boolean debugMode = false;
 
-    private static final String FILE_NAME = "./config/password/passwords.json";
+    public static final String FILE_NAME = "./config/password/passwords.json";
+    public static final String INVENTORY_DATA_DIR = "./config/password/inventories/";
 
     public static Data read() {
         Gson gson = new Gson();
@@ -128,26 +129,26 @@ public class Data {
         return ipLoginTime.computeIfAbsent(uuid, k -> new HashMap<>());
     }
 
-    public Map<String, Position> getUnAuthedPlayerPositions() {
-        return unAuthedPlayerPositions;
+    public Map<String, PlayerInfo> getUnAuthedPlayerInfo() {
+        return unAuthedPlayerInfo;
     }
 
-    public void addPlayerNotAuthedPosition(String uuid, Position pos) {
-        unAuthedPlayerPositions.put(uuid, pos);
+    public void addUnAuthedPlayerInfo(String uuid, PlayerInfo info) {
+        unAuthedPlayerInfo.put(uuid, info);
         save();
     }
 
-    public void removePlayerNotAuthedPosition(String uuid) {
-        unAuthedPlayerPositions.remove(uuid);
+    public void removeUnAuthedPlayerInfo(String uuid) {
+        unAuthedPlayerInfo.remove(uuid);
         save();
     }
 
-    public Position getPlayerNotAuthedPosition(String uuid) {
-        return unAuthedPlayerPositions.get(uuid);
+    public PlayerInfo getUnAuthedPlayerInfo(String uuid) {
+        return unAuthedPlayerInfo.get(uuid);
     }
 
-    public boolean hasPlayerNotAuthedPosition(String uuid) {
-        return unAuthedPlayerPositions.containsKey(uuid);
+    public boolean hasUnAuthedPlayerInfo(String uuid) {
+        return unAuthedPlayerInfo.containsKey(uuid);
     }
 
     public List<String> getWhitelist() {
@@ -166,6 +167,15 @@ public class Data {
 
     public boolean hasWhitelist(String name) {
         return whitelist.contains(name);
+    }
+
+    public void setDebugMode(boolean debugMode) {
+        this.debugMode = debugMode;
+        save();
+    }
+
+    public boolean isDebugMode() {
+        return debugMode;
     }
 
 }
